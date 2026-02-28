@@ -1,8 +1,8 @@
 services:
   app:
     build: .
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     volumes:
       - meal_data:/data
     environment:
@@ -12,6 +12,12 @@ services:
       - DEMO_DB_URL=/data/demo.db
       - CLAUDE_API_KEY=${CLAUDE_API_KEY:-}
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/login')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
 volumes:
   meal_data:
