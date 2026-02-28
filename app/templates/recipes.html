@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Recipes — Meal Planner{% endblock %}
+{% block content %}
+
+<div class="split-pane">
+
+  <!-- ── Left: recipe list ──────────────────────────────────────── -->
+  <div class="split-left">
+    <div class="toolbar">
+      <input type="search" name="q" placeholder="Search recipes…"
+             hx-get="/recipes/list"
+             hx-target="#recipe-list"
+             hx-trigger="input changed delay:300ms, search"
+             hx-include="this"
+             style="flex:1">
+
+      {% if not demo %}
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-primary"
+                hx-get="/recipes/add"
+                hx-target="#modal-container">+ Add</button>
+        <button class="btn btn-secondary"
+                hx-get="/recipes/ai/paste"
+                hx-target="#modal-container">Paste Text</button>
+        <button class="btn btn-secondary"
+                hx-get="/recipes/ai/url"
+                hx-target="#modal-container">From URL</button>
+        <button class="btn btn-secondary"
+                hx-get="/recipes/ai/generate"
+                hx-target="#modal-container">AI Generate</button>
+      </div>
+      {% endif %}
+
+      <span class="htmx-indicator"><span class="spinner"></span></span>
+    </div>
+
+    <div id="recipe-list">
+      {% include "partials/recipe_list.html" %}
+    </div>
+  </div>
+
+  <!-- ── Right: recipe detail ───────────────────────────────────── -->
+  <div class="split-right" id="recipe-detail">
+    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8">
+      Select a recipe to view details.
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

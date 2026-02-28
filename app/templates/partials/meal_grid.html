@@ -1,0 +1,57 @@
+<div class="meal-grid-wrapper">
+
+  <!-- Navigation state for HTMX-loaded grid -->
+  <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem">
+    <button class="btn btn-secondary btn-sm"
+            hx-get="/meal-plan/grid?week={{ prev_week }}"
+            hx-target="#meal-grid">← Prev</button>
+    <strong style="margin:0 .5rem">{{ week_start.strftime('%b %d, %Y') }}</strong>
+    <button class="btn btn-secondary btn-sm"
+            hx-get="/meal-plan/grid?week={{ today_week }}"
+            hx-target="#meal-grid">Today</button>
+    <button class="btn btn-secondary btn-sm"
+            hx-get="/meal-plan/grid?week={{ next_week }}"
+            hx-target="#meal-grid">Next →</button>
+  </div>
+
+  <div class="meal-grid">
+    <!-- Header row: day names -->
+    <div class="meal-grid-cell meal-grid-header"></div>
+    {% for d in week_dates %}
+    <div class="meal-grid-cell meal-grid-header">
+      <div>{{ day_names[loop.index0][:3] }}</div>
+      <div style="font-weight:400;font-size:.8rem;color:#64748b">
+        {{ d.strftime('%b %d') }}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Slot rows -->
+    {% for slot in slots %}
+    <div class="meal-grid-cell meal-grid-slot">{{ slot }}</div>
+    {% for d in week_dates %}
+    {% set entry = week_grid.get(d.isoformat(), {}).get(slot) %}
+    <div class="meal-grid-cell meal-cell {{ 'filled' if entry }}"
+         {% if not demo %}
+         hx-get="/meal-plan/pick/{{ d.isoformat() }}/{{ slot }}"
+         hx-target="#modal-container"
+         style="cursor:pointer"
+         {% endif %}>
+      {% if entry %}
+        {% if entry.recipe_name %}
+          <div class="meal-cell-name">{{ entry.recipe_name }}</div>
+          <div class="meal-cell-servings" style="font-size:.75rem;color:#64748b">
+            × {{ entry.servings }}
+          </div>
+        {% elif entry.notes %}
+          <div class="meal-cell-name" style="font-style:italic">{{ entry.notes }}</div>
+        {% endif %}
+      {% else %}
+        <span style="color:#cbd5e1;font-size:1.1rem">+</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% endfor %}
+  </div>
+
+</div>

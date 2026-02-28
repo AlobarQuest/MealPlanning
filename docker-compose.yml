@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      - APP_PASSWORD=${APP_PASSWORD:-changeme}
+      - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
+      - DB_PATH=/data/meal_planner.db
+      - DEMO_DB_URL=/data/demo.db
+      - CLAUDE_API_KEY=${CLAUDE_API_KEY:-}
+    restart: unless-stopped

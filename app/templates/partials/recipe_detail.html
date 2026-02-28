@@ -1,0 +1,71 @@
+<div class="recipe-detail">
+  <div class="recipe-detail-header">
+    <h2>{{ recipe.name }}</h2>
+    {% if not demo %}
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm"
+              hx-get="/recipes/{{ recipe.id }}/edit"
+              hx-target="#modal-container">Edit</button>
+      <button class="btn btn-secondary btn-sm"
+              hx-get="/recipes/{{ recipe.id }}/ai/modify"
+              hx-target="#modal-container">Modify with AI</button>
+      <button class="btn btn-danger btn-sm"
+              hx-delete="/recipes/{{ recipe.id }}"
+              hx-confirm="Delete {{ recipe.name }}?"
+              hx-target="body"
+              hx-push-url="/recipes">Delete</button>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="recipe-meta">
+    {% if recipe.servings %}
+    <span><strong>Servings:</strong> {{ recipe.servings }}</span>
+    {% endif %}
+    {% if recipe.prep_time %}
+    <span><strong>Prep:</strong> {{ recipe.prep_time }}</span>
+    {% endif %}
+    {% if recipe.cook_time %}
+    <span><strong>Cook:</strong> {{ recipe.cook_time }}</span>
+    {% endif %}
+    {% if recipe.rating %}
+    <span><strong>Rating:</strong> {{ recipe.rating }}/5</span>
+    {% endif %}
+  </div>
+
+  {% if recipe.tags %}
+  <div class="recipe-tags">
+    {% for tag in recipe.tags.split(',') %}
+    <span class="tag">{{ tag.strip() }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if recipe.source_url %}
+  <div style="margin:.5rem 0">
+    <a href="{{ recipe.source_url }}" target="_blank" rel="noopener">Source ↗</a>
+  </div>
+  {% endif %}
+
+  {% if recipe.description %}
+  <p style="margin:.75rem 0;color:#475569">{{ recipe.description }}</p>
+  {% endif %}
+
+  {% if recipe.ingredients %}
+  <h3>Ingredients</h3>
+  <ul class="ingredient-list">
+    {% for ing in recipe.ingredients %}
+    <li>
+      {% if ing.quantity %}{{ ing.quantity|round(2) }}{% endif %}
+      {% if ing.unit %}{{ ing.unit }}{% endif %}
+      {{ ing.name }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if recipe.instructions %}
+  <h3>Instructions</h3>
+  <div class="recipe-instructions">{{ recipe.instructions }}</div>
+  {% endif %}
+</div>

@@ -1,0 +1,57 @@
+{% if shopping %}
+
+<div id="shopping-list-data">
+  {% for store, items in shopping.items() %}
+  <div class="shopping-store" style="margin-bottom:1.25rem">
+    <h3 style="margin-bottom:.5rem;padding-bottom:.25rem;border-bottom:2px solid #e2e8f0">
+      {{ store }}
+    </h3>
+    {% for name, qty, unit, cost in items %}
+    <div class="shopping-item" style="display:flex;align-items:center;gap:.6rem;padding:.3rem 0">
+      <input type="checkbox" id="item-{{ store|replace(' ','-') }}-{{ loop.index }}">
+      <label for="item-{{ store|replace(' ','-') }}-{{ loop.index }}" style="flex:1;cursor:pointer">
+        {{ name }}
+        {% if qty and qty > 0 %}
+          — <span style="color:#64748b">{{ qty|round(2)|int if qty == (qty|int) else qty|round(2) }} {{ unit }}</span>
+        {% endif %}
+      </label>
+      {% if cost %}
+      <span style="color:#475569;font-size:.9rem">${{ "%.2f"|format(cost) }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<div style="display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap">
+  <button class="btn btn-secondary"
+          onclick="copyListToClipboard()">
+    Copy to Clipboard
+  </button>
+  <form method="post" action="/shopping/export" style="display:inline">
+    <input type="hidden" name="start_date" value="{{ start_date }}">
+    <input type="hidden" name="end_date"   value="{{ end_date }}">
+    <input type="hidden" name="use_pantry" value="on">
+    <button type="submit" class="btn btn-secondary">Download .txt</button>
+  </form>
+</div>
+
+<pre id="plain-text-list" style="display:none">{{ plain_text }}</pre>
+
+<script>
+function copyListToClipboard() {
+  const text = document.getElementById('plain-text-list').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy to Clipboard'; }, 2000);
+  });
+}
+</script>
+
+{% else %}
+<p style="color:#64748b;margin-top:.5rem">
+  No items needed for this date range — either nothing is planned or your pantry covers everything.
+</p>
+{% endif %}

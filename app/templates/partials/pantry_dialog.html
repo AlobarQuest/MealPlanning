@@ -1,0 +1,100 @@
+<dialog>
+  <form method="post"
+        action="{{ '/pantry/' ~ item.id ~ '/edit' if item else '/pantry/add' }}"
+        hx-post="{{ '/pantry/' ~ item.id ~ '/edit' if item else '/pantry/add' }}"
+        hx-target="#pantry-tbody"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
+
+    <div class="dialog-header">
+      <h2>{{ 'Edit Item' if item else 'Add Pantry Item' }}</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+
+    <div class="dialog-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" name="name" value="{{ item.name if item else '' }}" required>
+        </div>
+        <div class="form-group">
+          <label>Brand</label>
+          <input type="text" name="brand" value="{{ item.brand or '' }}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" name="category" value="{{ item.category or '' }}"
+                 list="category-list">
+          <datalist id="category-list">
+            {% for c in categories %}<option value="{{ c }}">{% endfor %}
+          </datalist>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <select name="location">
+            <option value="">—</option>
+            {% for loc in ['Pantry', 'Fridge', 'Freezer'] %}
+            <option value="{{ loc }}" {{ 'selected' if item and item.location == loc }}>
+              {{ loc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Quantity</label>
+          <input type="number" name="quantity" step="0.01"
+                 value="{{ item.quantity if item else '1' }}">
+        </div>
+        <div class="form-group">
+          <label>Unit</label>
+          <input type="text" name="unit" value="{{ item.unit or '' }}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Best By</label>
+          <input type="date" name="best_by" value="{{ item.best_by or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Preferred Store</label>
+          <select name="preferred_store_id">
+            <option value="">—</option>
+            {% for s in stores %}
+            <option value="{{ s.id }}"
+              {{ 'selected' if item and item.preferred_store_id == s.id }}>
+              {{ s.name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Barcode</label>
+          <input type="text" name="barcode" value="{{ item.barcode or '' }}">
+        </div>
+        <div class="form-group">
+          <label>Estimated Price ($)</label>
+          <input type="number" name="estimated_price" step="0.01"
+                 value="{{ item.estimated_price or '' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary">
+        {{ 'Save Changes' if item else 'Add Item' }}
+      </button>
+    </div>
+  </form>
+</dialog>

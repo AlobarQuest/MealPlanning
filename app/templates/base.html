@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Meal Planner{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/htmx.min.js" defer></script>
+</head>
+<body class="app-layout">
+
+{% if demo %}
+<div class="demo-banner">
+  👁 Demo mode — browsing is enabled, but changes are disabled.
+</div>
+{% endif %}
+
+<nav class="tab-bar">
+  <a href="{{ '/demo' if demo else '' }}/pantry"
+     class="{{ 'active' if active_tab == 'pantry' }}">Pantry</a>
+  <a href="{{ '/demo' if demo else '' }}/recipes"
+     class="{{ 'active' if active_tab == 'recipes' }}">Recipes</a>
+  <a href="{{ '/demo' if demo else '' }}/meal-plan"
+     class="{{ 'active' if active_tab == 'meal_plan' }}">Meal Plan</a>
+  <a href="{{ '/demo' if demo else '' }}/shopping"
+     class="{{ 'active' if active_tab == 'shopping' }}">Shopping List</a>
+  <a href="{{ '/demo' if demo else '' }}/stores"
+     class="{{ 'active' if active_tab == 'stores' }}">Stores</a>
+  {% if not demo %}
+  <a href="/settings" class="{{ 'active' if active_tab == 'settings' }}">Settings</a>
+  {% endif %}
+  <span class="spacer"></span>
+  {% if not demo %}
+  <form method="post" action="/logout" style="display:inline">
+    <button type="submit" class="logout-btn">Sign out</button>
+  </form>
+  {% endif %}
+</nav>
+
+<main class="tab-content">
+  <div id="flash-area">
+  {% if flash_message %}
+    <div class="flash {{ flash_type | default('success') }}">{{ flash_message }}</div>
+  {% endif %}
+  </div>
+  {% block content %}{% endblock %}
+</main>
+
+<div id="modal-container"></div>
+
+<script>
+// Open dialog after HTMX loads it into modal-container
+document.addEventListener('htmx:afterSwap', function(e) {
+  if (e.target.id === 'modal-container') {
+    const dialog = e.target.querySelector('dialog');
+    if (dialog && !dialog.open) dialog.showModal();
+  }
+});
+// Close modal when clicking the backdrop
+document.addEventListener('click', function(e) {
+  const dialog = document.querySelector('#modal-container dialog');
+  if (dialog && e.target === dialog) {
+    dialog.close();
+    dialog.remove();
+  }
+});
+</script>
+
+</body>
+</html>

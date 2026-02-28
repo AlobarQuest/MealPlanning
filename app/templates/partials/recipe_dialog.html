@@ -1,0 +1,120 @@
+<dialog style="max-width:680px;width:95%;max-height:90vh;overflow-y:auto">
+  {% set action = ('/recipes/' ~ recipe.id ~ '/edit') if recipe and recipe.id else '/recipes/add' %}
+  <form method="post" action="{{ action }}"
+        hx-post="{{ action }}"
+        hx-target="{{ '#recipe-detail' if recipe and recipe.id else 'body' }}"
+        hx-push-url="{{ '/recipes/' ~ recipe.id if recipe and recipe.id else 'false' }}"
+        hx-on::after-request="if(event.detail.successful && event.detail.xhr.status < 400){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
+
+    <div class="dialog-header">
+      <h2>
+        {% if is_ai_preview is defined and is_ai_preview %}
+          Review AI Recipe
+        {% elif recipe and recipe.id %}
+          Edit Recipe
+        {% else %}
+          Add Recipe
+        {% endif %}
+      </h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+
+    <div class="dialog-body">
+
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" value="{{ recipe.name if recipe else '' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="2">{{ recipe.description or '' }}</textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Servings</label>
+          <input type="number" name="servings" value="{{ recipe.servings if recipe else '4' }}" min="1">
+        </div>
+        <div class="form-group">
+          <label>Prep Time</label>
+          <input type="text" name="prep_time" value="{{ recipe.prep_time or '' }}" placeholder="e.g. 15 min">
+        </div>
+        <div class="form-group">
+          <label>Cook Time</label>
+          <input type="text" name="cook_time" value="{{ recipe.cook_time or '' }}" placeholder="e.g. 30 min">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tags</label>
+          <input type="text" name="tags" value="{{ recipe.tags or '' }}" placeholder="chicken, quick, dinner">
+        </div>
+        <div class="form-group">
+          <label>Rating (1–5)</label>
+          <input type="number" name="rating" value="{{ recipe.rating or '' }}" min="1" max="5">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Source URL</label>
+        <input type="url" name="source_url" value="{{ recipe.source_url or '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>Ingredients</label>
+        <div id="ingredients-list">
+          {% if ingredients %}
+            {% for ing in ingredients %}
+              {% set i = loop.index0 %}
+              {% include "partials/ingredient_row.html" %}
+            {% endfor %}
+          {% else %}
+            {% set i = 0 %}{% set ing = None %}
+            {% include "partials/ingredient_row.html" %}
+          {% endif %}
+        </div>
+        <button type="button"
+                hx-get="/recipes/ingredient-row"
+                hx-target="#ingredients-list"
+                hx-swap="beforeend"
+                hx-vals="js:{index: document.querySelectorAll('.ingredient-row').length}"
+                class="btn btn-secondary btn-sm"
+                style="margin-top:.4rem">+ Add Ingredient</button>
+      </div>
+
+      <div class="form-group">
+        <label>Instructions</label>
+        <textarea name="instructions" rows="6">{{ recipe.instructions or '' }}</textarea>
+      </div>
+
+    </div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary">
+        {% if recipe and recipe.id %}Save Changes{% else %}Save Recipe{% endif %}
+      </button>
+    </div>
+
+  </form>
+</dialog>
+
+<script>
+function renumberIngredients() {
+  document.querySelectorAll('.ingredient-row').forEach(function(row, idx) {
+    const name = row.querySelector('.ing-name');
+    const qty  = row.querySelector('.ing-qty');
+    const unit = row.querySelector('.ing-unit');
+    if (name) name.name = 'ingredient_name_' + idx;
+    if (qty)  qty.name  = 'ingredient_qty_'  + idx;
+    if (unit) unit.name = 'ingredient_unit_' + idx;
+  });
+}
+</script>

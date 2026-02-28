@@ -1,0 +1,43 @@
+{% if suggestions %}
+<form hx-post="/meal-plan/ai/apply"
+      hx-target="#meal-grid"
+      hx-swap="innerHTML"
+      hx-on::after-request="if(event.detail.successful){ document.getElementById('ai-suggest-panel').style.display='none'; }">
+  <input type="hidden" name="week" value="{{ week_str }}">
+
+  <table style="width:100%;margin-top:.5rem;border-collapse:collapse;font-size:.9rem">
+    <thead>
+      <tr>
+        <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid #e2e8f0">Day</th>
+        <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid #e2e8f0">Slot</th>
+        <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid #e2e8f0">Suggested Meal</th>
+        <th style="text-align:left;padding:.3rem .5rem;border-bottom:1px solid #e2e8f0">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sug in suggestions %}
+      {% set i = loop.index0 %}
+      <input type="hidden" name="sug_day_{{ i }}"  value="{{ sug.day }}">
+      <input type="hidden" name="sug_slot_{{ i }}" value="{{ sug.slot }}">
+      <input type="hidden" name="sug_meal_{{ i }}" value="{{ sug.meal }}">
+      <tr>
+        <td style="padding:.3rem .5rem">{{ sug.day }}</td>
+        <td style="padding:.3rem .5rem">{{ sug.slot }}</td>
+        <td style="padding:.3rem .5rem;font-weight:500">{{ sug.meal }}</td>
+        <td style="padding:.3rem .5rem;color:#64748b;font-size:.85rem">{{ sug.notes or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="display:flex;gap:.5rem;margin-top:.75rem">
+    <button type="submit" class="btn btn-primary">Apply to Week</button>
+    <button type="button" class="btn btn-secondary"
+            onclick="document.getElementById('ai-suggest-results').innerHTML=''">
+      Discard
+    </button>
+  </div>
+</form>
+{% else %}
+<p style="color:#ef4444;margin-top:.5rem">No suggestions returned. Check your AI key in Settings.</p>
+{% endif %}

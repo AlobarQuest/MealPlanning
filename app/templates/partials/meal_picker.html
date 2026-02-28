@@ -1,0 +1,64 @@
+<dialog style="max-width:480px;width:95%">
+  <div class="dialog-header">
+    <h2>{{ slot }} — {{ entry_date }}</h2>
+    <button type="button"
+            onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+            style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+  </div>
+
+  <div class="dialog-body">
+
+    <!-- Recipe picker form -->
+    <form hx-post="/meal-plan/set"
+          hx-target="#meal-grid"
+          hx-swap="innerHTML"
+          hx-on::after-request="if(event.detail.successful){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
+      <input type="hidden" name="date" value="{{ entry_date }}">
+      <input type="hidden" name="slot" value="{{ slot }}">
+      <input type="hidden" name="week" value="{{ week_str }}">
+
+      <div class="form-group">
+        <label>Recipe</label>
+        <select name="recipe_id">
+          <option value="">— none —</option>
+          {% for recipe in recipes %}
+          <option value="{{ recipe.id }}"
+                  {{ 'selected' if current and current.recipe_id == recipe.id }}>
+            {{ recipe.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Servings</label>
+        <input type="number" name="servings" min="1" value="{{ current.servings if current else 1 }}">
+      </div>
+
+      <div class="form-group">
+        <label>Notes (or free-text meal)</label>
+        <input type="text" name="notes" value="{{ current.notes or '' }}"
+               placeholder="e.g. Leftovers, Eat out…">
+      </div>
+
+      <div class="dialog-footer" style="padding:0">
+        <button type="button" class="btn btn-secondary"
+                onclick="this.closest('dialog').close(); this.closest('dialog').remove()">
+          Cancel
+        </button>
+        {% if current %}
+        <button type="button" class="btn btn-danger"
+                hx-post="/meal-plan/clear"
+                hx-vals='{"date": "{{ entry_date }}", "slot": "{{ slot }}", "week": "{{ week_str }}"}'
+                hx-target="#meal-grid"
+                hx-swap="innerHTML"
+                hx-on::after-request="if(event.detail.successful){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
+          Clear
+        </button>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+
+  </div>
+</dialog>

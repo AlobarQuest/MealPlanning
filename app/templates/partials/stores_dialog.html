@@ -1,0 +1,42 @@
+<dialog>
+  <form method="post"
+        action="{{ '/stores/' ~ store.id ~ '/edit' if store else '/stores/add' }}"
+        hx-post="{{ '/stores/' ~ store.id ~ '/edit' if store else '/stores/add' }}"
+        hx-target="#stores-tbody"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
+
+    <div class="dialog-header">
+      <h2>{{ 'Edit Store' if store else 'Add Store' }}</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+
+    <div class="dialog-body">
+      <div class="form-group">
+        <label>Name *</label>
+        <input type="text" name="name" value="{{ store.name if store else '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" name="location" value="{{ store.location or '' }}"
+               placeholder="e.g. 123 Main St">
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea name="notes">{{ store.notes or '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary">
+        {{ 'Save Changes' if store else 'Add Store' }}
+      </button>
+    </div>
+  </form>
+</dialog>

@@ -1,0 +1,25 @@
+{% for store in stores %}
+<tr id="store-row-{{ store.id }}">
+  <td>{{ store.name }}</td>
+  <td>{{ store.location or '' }}</td>
+  <td>{{ store.notes or '' }}</td>
+  {% if not demo %}
+  <td style="white-space:nowrap">
+    <button class="btn btn-secondary btn-sm"
+            hx-get="/stores/{{ store.id }}/edit"
+            hx-target="#modal-container">Edit</button>
+    <button class="btn btn-danger btn-sm"
+            hx-delete="/stores/{{ store.id }}"
+            hx-target="#store-row-{{ store.id }}"
+            hx-swap="outerHTML"
+            hx-confirm="Delete {{ store.name }}?">Del</button>
+  </td>
+  {% endif %}
+</tr>
+{% else %}
+<tr>
+  <td colspan="4" style="text-align:center;color:#94a3b8;padding:2rem">
+    No stores yet.
+  </td>
+</tr>
+{% endfor %}

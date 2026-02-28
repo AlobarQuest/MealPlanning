@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Stores — Meal Planner{% endblock %}
+{% block content %}
+
+<div class="toolbar">
+  {% if not demo %}
+  <button class="btn btn-primary"
+          hx-get="/stores/add"
+          hx-target="#modal-container">+ Add Store</button>
+  {% endif %}
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Notes</th>
+      {% if not demo %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody id="stores-tbody">
+    {% include "partials/stores_rows.html" %}
+  </tbody>
+</table>
+
+{% endblock %}

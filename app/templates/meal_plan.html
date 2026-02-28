@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Meal Plan — Meal Planner{% endblock %}
+{% block content %}
+
+<div class="toolbar" style="align-items:center">
+  <!-- Week navigation -->
+  <button class="btn btn-secondary"
+          hx-get="/meal-plan/grid?week={{ prev_week }}"
+          hx-target="#meal-grid">← Prev</button>
+
+  <button class="btn btn-secondary"
+          hx-get="/meal-plan/grid?week={{ today_week }}"
+          hx-target="#meal-grid">Today</button>
+
+  <button class="btn btn-secondary"
+          hx-get="/meal-plan/grid?week={{ next_week }}"
+          hx-target="#meal-grid">Next →</button>
+
+  <span style="font-weight:600;margin:0 .5rem">
+    Week of {{ week_start.strftime('%b %d, %Y') }}
+  </span>
+
+  {% if not demo %}
+  <button class="btn btn-secondary"
+          onclick="document.getElementById('ai-suggest-panel').style.display='block'">
+    AI Suggest Week
+  </button>
+  {% endif %}
+
+  <span class="htmx-indicator"><span class="spinner"></span></span>
+</div>
+
+<!-- AI Suggest panel (hidden by default) -->
+{% if not demo %}
+<div id="ai-suggest-panel" style="display:none;margin-bottom:.75rem">
+  <form hx-post="/meal-plan/ai/suggest"
+        hx-target="#ai-suggest-results"
+        hx-swap="innerHTML"
+        style="display:flex;gap:.5rem;align-items:flex-end">
+    <input type="hidden" name="week" value="{{ week_str }}">
+    <div class="form-group" style="flex:1;margin:0">
+      <label>Preferences (optional)</label>
+      <input type="text" name="preferences" placeholder="e.g. vegetarian, quick meals…">
+    </div>
+    <button type="submit" class="btn btn-primary" hx-disabled-elt="this">
+      <span class="htmx-indicator spinner"></span> Suggest
+    </button>
+    <button type="button" class="btn btn-secondary"
+            onclick="document.getElementById('ai-suggest-panel').style.display='none'">
+      Cancel
+    </button>
+  </form>
+  <div id="ai-suggest-results"></div>
+</div>
+{% endif %}
+
+<div id="meal-grid">
+  {% include "partials/meal_grid.html" %}
+</div>
+
+{% endblock %}

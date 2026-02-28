@@ -1,0 +1,117 @@
+<dialog style="max-width:520px;width:95%">
+  {% if mode == "paste" %}
+  <form hx-post="/recipes/ai/parse-text"
+        hx-target="#modal-container"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ const d = document.querySelector('#modal-container dialog'); if(d && !d.open) d.showModal(); }">
+
+    <div class="dialog-header">
+      <h2>Paste Recipe Text</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <div class="form-group">
+        <label>Recipe Text</label>
+        <textarea name="text" rows="10" placeholder="Paste the full recipe text here…" required></textarea>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">Cancel</button>
+      <button type="submit" class="btn btn-primary" hx-disabled-elt="this">
+        <span class="htmx-indicator spinner"></span> Parse Recipe
+      </button>
+    </div>
+
+  </form>
+
+  {% elif mode == "url" %}
+  <form hx-post="/recipes/ai/parse-url"
+        hx-target="#modal-container"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ const d = document.querySelector('#modal-container dialog'); if(d && !d.open) d.showModal(); }">
+
+    <div class="dialog-header">
+      <h2>Import from URL</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <div class="form-group">
+        <label>Recipe URL</label>
+        <input type="url" name="url" placeholder="https://example.com/recipe" required>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">Cancel</button>
+      <button type="submit" class="btn btn-primary" hx-disabled-elt="this">
+        <span class="htmx-indicator spinner"></span> Fetch & Parse
+      </button>
+    </div>
+
+  </form>
+
+  {% elif mode == "generate" %}
+  <form hx-post="/recipes/ai/generate"
+        hx-target="#modal-container"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ const d = document.querySelector('#modal-container dialog'); if(d && !d.open) d.showModal(); }">
+
+    <div class="dialog-header">
+      <h2>Generate Recipe with AI</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <div class="form-group">
+        <label>Preferences (optional)</label>
+        <textarea name="preferences" rows="4"
+                  placeholder="e.g. vegetarian, quick weeknight dinner, uses chicken…"></textarea>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">Cancel</button>
+      <button type="submit" class="btn btn-primary" hx-disabled-elt="this">
+        <span class="htmx-indicator spinner"></span> Generate
+      </button>
+    </div>
+
+  </form>
+
+  {% elif mode == "modify" %}
+  <form hx-post="/recipes/{{ recipe_id }}/ai/modify"
+        hx-target="#modal-container"
+        hx-swap="innerHTML"
+        hx-on::after-request="if(event.detail.successful){ const d = document.querySelector('#modal-container dialog'); if(d && !d.open) d.showModal(); }">
+
+    <div class="dialog-header">
+      <h2>Modify Recipe with AI</h2>
+      <button type="button"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()"
+              style="background:none;border:none;font-size:1.4rem;cursor:pointer">&times;</button>
+    </div>
+    <div class="dialog-body">
+      <div class="form-group">
+        <label>Modification Instruction</label>
+        <textarea name="instruction" rows="4"
+                  placeholder="e.g. make it gluten-free, double the servings, add more vegetables…"
+                  required></textarea>
+      </div>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').close(); this.closest('dialog').remove()">Cancel</button>
+      <button type="submit" class="btn btn-primary" hx-disabled-elt="this">
+        <span class="htmx-indicator spinner"></span> Modify
+      </button>
+    </div>
+
+  </form>
+  {% endif %}
+</dialog>

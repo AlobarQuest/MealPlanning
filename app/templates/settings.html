@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Settings — Meal Planner{% endblock %}
+{% block content %}
+
+<div style="max-width:500px">
+  <h2>Settings</h2>
+
+  <form method="post" action="/settings" style="margin-top:1rem">
+
+    <div class="form-group">
+      <label>Claude API Key</label>
+      {% if key_set %}
+      <p style="color:#64748b;font-size:.9rem;margin:.25rem 0 .5rem">
+        Currently set: <code>{{ masked_key }}</code>
+      </p>
+      {% else %}
+      <p style="color:#f59e0b;font-size:.9rem;margin:.25rem 0 .5rem">
+        Not set — AI features will not work without a key.
+      </p>
+      {% endif %}
+      <input type="password" name="claude_api_key"
+             placeholder="{{ 'Enter new key to update' if key_set else 'sk-ant-...' }}"
+             autocomplete="off">
+      <small style="color:#94a3b8">
+        Get your key at
+        <a href="https://console.anthropic.com/" target="_blank" rel="noopener">
+          console.anthropic.com
+        </a>
+      </small>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+
+  </form>
+</div>
+
+{% endblock %}

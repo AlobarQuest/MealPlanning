@@ -1,0 +1,14 @@
+<div class="ingredient-row">
+  <input type="text"   name="ingredient_name_{{ i }}"
+         value="{{ ing.name if ing else '' }}"
+         placeholder="Ingredient name" class="ing-name">
+  <input type="number" name="ingredient_qty_{{ i }}"
+         value="{{ ing.quantity if ing and ing.quantity else '' }}"
+         placeholder="Qty" step="0.01" class="ing-qty">
+  <input type="text"   name="ingredient_unit_{{ i }}"
+         value="{{ ing.unit if ing else '' }}"
+         placeholder="Unit" class="ing-unit">
+  <button type="button"
+          onclick="this.closest('.ingredient-row').remove(); renumberIngredients()"
+          class="btn-remove-row">✕</button>
+</div>

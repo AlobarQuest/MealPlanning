@@ -1,0 +1,11 @@
+.git
+.env
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+tests/
+meal_planner/gui/
+*.md
+docs/
+.worktrees/

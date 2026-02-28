@@ -1,0 +1,36 @@
+{% if flash_message is defined and flash_message %}
+<div id="flash-area" hx-swap-oob="innerHTML">
+  <div class="flash {{ flash_type | default('success') }}">{{ flash_message }}</div>
+</div>
+{% endif %}
+{% for item in items %}
+<tr id="pantry-row-{{ item.id }}"
+    class="{{ 'expired' if item.best_by and item.best_by < today else ('expiring' if item.id in expiring_ids else '') }}">
+  <td>{{ item.name }}</td>
+  <td>{{ item.brand or '' }}</td>
+  <td>{{ item.category or '' }}</td>
+  <td>{{ item.location or '' }}</td>
+  <td>{{ item.quantity }}</td>
+  <td>{{ item.unit or '' }}</td>
+  <td>{{ item.best_by or '' }}</td>
+  <td>{{ store_map.get(item.preferred_store_id, '') }}</td>
+  {% if not demo %}
+  <td style="white-space:nowrap">
+    <button class="btn btn-secondary btn-sm"
+            hx-get="/pantry/{{ item.id }}/edit"
+            hx-target="#modal-container">Edit</button>
+    <button class="btn btn-danger btn-sm"
+            hx-delete="/pantry/{{ item.id }}"
+            hx-target="#pantry-row-{{ item.id }}"
+            hx-swap="outerHTML"
+            hx-confirm="Delete {{ item.name }}?">Del</button>
+  </td>
+  {% endif %}
+</tr>
+{% else %}
+<tr>
+  <td colspan="9" style="text-align:center;color:#94a3b8;padding:2rem">
+    No items found.
+  </td>
+</tr>
+{% endfor %}

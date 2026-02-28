@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Pantry — Meal Planner{% endblock %}
+{% block content %}
+
+<div class="toolbar">
+  <select name="location"
+          hx-get="/pantry/rows"
+          hx-target="#pantry-tbody"
+          hx-include="[name='category']">
+    {% for loc in locations %}
+      <option value="{{ loc }}" {{ 'selected' if loc == filter_location }}>
+        {{ loc or 'All Locations' }}
+      </option>
+    {% endfor %}
+  </select>
+
+  <select name="category"
+          hx-get="/pantry/rows"
+          hx-target="#pantry-tbody"
+          hx-include="[name='location']">
+    {% for cat in categories %}
+      <option value="{{ cat }}" {{ 'selected' if cat == filter_category }}>
+        {{ cat or 'All Categories' }}
+      </option>
+    {% endfor %}
+  </select>
+
+  {% if not demo %}
+  <button class="btn btn-primary"
+          hx-get="/pantry/add"
+          hx-target="#modal-container">+ Add Item</button>
+
+  <label class="btn btn-secondary" style="cursor:pointer">
+    Import CSV
+    <input type="file" name="file" accept=".csv" style="display:none"
+           hx-post="/pantry/import"
+           hx-target="#pantry-tbody"
+           hx-encoding="multipart/form-data"
+           hx-trigger="change">
+  </label>
+  {% endif %}
+
+  <span class="htmx-indicator"><span class="spinner"></span></span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Brand</th>
+      <th>Category</th>
+      <th>Location</th>
+      <th>Qty</th>
+      <th>Unit</th>
+      <th>Best By</th>
+      <th>Store</th>
+      {% if not demo %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody id="pantry-tbody">
+    {% include "partials/pantry_rows.html" %}
+  </tbody>
+</table>
+
+{% endblock %}

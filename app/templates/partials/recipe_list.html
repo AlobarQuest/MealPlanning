@@ -1,0 +1,21 @@
+{% if recipes %}
+{% for recipe in recipes %}
+<div class="recipe-list-item {{ 'active' if selected_id and selected_id == recipe.id }}"
+     hx-get="/recipes/{{ recipe.id }}"
+     hx-target="#recipe-detail"
+     hx-push-url="false">
+  <div class="recipe-list-name">{{ recipe.name }}</div>
+  {% if recipe.tags %}
+  <div class="recipe-list-tags">
+    {% for tag in recipe.tags.split(',') %}
+    <span class="tag">{{ tag.strip() }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+{% else %}
+<div style="padding:2rem;text-align:center;color:#94a3b8">
+  No recipes found.
+</div>
+{% endif %}
