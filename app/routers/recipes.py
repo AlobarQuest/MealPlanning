@@ -5,8 +5,7 @@ from fastapi import APIRouter, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from typing import Optional
-import io as _io
-from pathlib import Path as _Path
+import io
 
 from meal_planner.core import recipes as recipes_core
 from meal_planner.core.ai_assistant import (
@@ -61,14 +60,14 @@ def _recipe_from_form(form, recipe_id=None) -> Recipe:
     )
 
 
-_UPLOADS_DIR = _Path(__file__).parent.parent / "static" / "uploads" / "recipes"
+_UPLOADS_DIR = Path(__file__).parent.parent / "static" / "uploads" / "recipes"
 
 
 def _save_photo(recipe_id: int, file_bytes: bytes) -> Optional[str]:
     """Save uploaded image bytes as JPEG. Returns the static URL path or None on failure."""
     try:
         from PIL import Image
-        img = Image.open(_io.BytesIO(file_bytes))
+        img = Image.open(io.BytesIO(file_bytes))
         img = img.convert("RGB")
         _UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
         dest = _UPLOADS_DIR / f"{recipe_id}.jpg"
