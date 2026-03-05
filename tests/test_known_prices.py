@@ -77,3 +77,12 @@ def test_prices_import_save_skips_unchecked(authed_client):
     assert resp.status_code == 200
     assert prices_core.get_by_name("Butter") is not None
     assert prices_core.get_by_name("Cheese") is None
+
+
+def test_demo_stores_shows_price_book():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app, raise_server_exceptions=True) as c:
+        resp = c.get("/demo/stores")
+    assert resp.status_code == 200
+    assert "price book" in resp.text.lower() or "prices" in resp.text.lower()

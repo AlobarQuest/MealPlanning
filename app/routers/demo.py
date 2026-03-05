@@ -15,6 +15,7 @@ from meal_planner.db.database import override_db_path
 from meal_planner.core import pantry as pantry_core, recipes as recipes_core
 from meal_planner.core import staples as staples_core
 from meal_planner.core import meal_plan as mp_core, stores as stores_core
+from meal_planner.core import known_prices as known_prices_core
 from meal_planner.core.shopping_list import generate as shopping_generate, format_shopping_list
 
 router = APIRouter(prefix="/demo", tags=["demo"])
@@ -181,6 +182,12 @@ async def demo_shopping_generate(request: Request):
 def demo_stores(request: Request):
     with override_db_path(_demo_db_path()):
         store_list = stores_core.get_all()
+        price_list = known_prices_core.get_all()
+        store_map = {s.id: s.name for s in store_list}
     return templates.TemplateResponse(request, "stores.html", _ctx(
-        request, "stores", stores=store_list,
+        request, "stores",
+        stores=store_list,
+        prices=price_list,
+        store_map=store_map,
+        filter_store_id=0,
     ))
