@@ -559,6 +559,53 @@ Return only the JSON array, wrapped in ```json``` code fences."""
     return results
 
 
+def parse_receipt(text: str) -> list[dict]:
+    """Extract grocery items and prices from receipt text using Claude.
+
+    Returns a list of dicts: [{item_name, unit_price, unit}]
+    unit may be None if not determinable from the receipt.
+    Returns empty list if parsing fails or API key not set.
+    """
+    client = _get_client()
+    prompt = f"""Extract all grocery items and their prices from this receipt text.
+Return a JSON array of objects, each with:
+- "item_name": string (the product name, cleaned up)
+- "unit_price": number (price as a float, e.g. 2.99)
+- "unit": string or null (e.g. "lb", "each", "bottle" — null if unknown)
+
+Only include items that have a clear price. Skip subtotals, taxes, and totals.
+Return ONLY the JSON array, no explanation.
+
+Receipt text:
+{text[:8000]}"""
+
+    response = client.messages.create(
+        model="claude-opus-4-5-20251101",
+        max_tokens=2048,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = response.content[0].text.strip()
+
+    # Strip markdown code fences if present
+    match = re.search(r"```(?:json)?\s*([\s\S]+?)\s*```", raw)
+    if match:
+        raw = match.group(1)
+
+    try:
+        items = json.loads(raw)
+        return [
+            {
+                "item_name": str(i.get("item_name", "")).strip(),
+                "unit_price": float(i.get("unit_price", 0)),
+                "unit": i.get("unit") or None,
+            }
+            for i in items
+            if i.get("item_name") and i.get("unit_price") is not None
+        ]
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return []
+
+
 def modify_recipe(recipe: Recipe, instruction: str) -> Optional[Recipe]:
     """Modify an existing recipe per user instruction."""
     ingredients_str = "\n".join(

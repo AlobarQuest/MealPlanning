@@ -1,0 +1,65 @@
+<dialog>
+  {% if not extracted %}
+  <!-- Step 1: paste receipt -->
+  <form hx-post="/stores/prices/import/parse"
+        hx-target="#modal-container">
+    <h3>Import from Receipt</h3>
+    <label>Store
+      <select name="store_id">
+        <option value="">— Select store —</option>
+        {% for store in stores %}
+        <option value="{{ store.id }}">{{ store.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Paste receipt text
+      <textarea name="receipt_text" rows="10"
+                placeholder="Paste your receipt here…"
+                required style="width:100%;font-size:12px;font-family:monospace"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button type="submit" class="btn btn-primary">Extract Prices</button>
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').remove()">Cancel</button>
+    </div>
+  </form>
+
+  {% else %}
+  <!-- Step 2: review extracted prices -->
+  <form hx-post="/stores/prices/import/save"
+        hx-target="#price-book"
+        hx-on::after-request="this.closest('dialog').remove()">
+    <h3>Review Extracted Prices</h3>
+    <input type="hidden" name="store_id" value="{{ store_id or '' }}">
+    <p style="font-size:13px;color:#64748b;margin-bottom:1rem">
+      Uncheck items you don't want to save.
+    </p>
+    <div style="max-height:50vh;overflow-y:auto">
+    <table>
+      <thead>
+        <tr><th></th><th>Item</th><th>Price</th><th>Unit</th></tr>
+      </thead>
+      <tbody>
+        {% for item in extracted %}
+        <tr>
+          <td><input type="checkbox" name="include" value="{{ loop.index0 }}" checked></td>
+          <td><input type="hidden" name="item_name" value="{{ item.item_name }}">{{ item.item_name }}</td>
+          <td><input type="hidden" name="unit_price" value="{{ item.unit_price }}">${{ "%.2f"|format(item.unit_price) }}</td>
+          <td><input type="hidden" name="unit" value="{{ item.unit or '' }}">{{ item.unit or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:1rem">
+          No prices could be extracted. Try pasting more of the receipt.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <div class="dialog-actions">
+      <button type="submit" class="btn btn-primary">Save Selected</button>
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').remove()">Cancel</button>
+    </div>
+  </form>
+  {% endif %}
+</dialog>

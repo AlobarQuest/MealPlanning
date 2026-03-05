@@ -43,3 +43,37 @@ def test_prices_filter_by_store(authed_client):
     resp = authed_client.get(f"/stores/prices?store_id={store_id}")
     assert resp.status_code == 200
     assert "Butter" in resp.text
+
+
+def test_prices_import_form_returns_dialog(authed_client):
+    resp = authed_client.get("/stores/prices/import")
+    assert resp.status_code == 200
+    assert "<dialog" in resp.text
+    assert "receipt" in resp.text.lower()
+
+
+def test_prices_import_save_bulk_upserts(authed_client):
+    resp = authed_client.post("/stores/prices/import/save", data={
+        "store_id": "",
+        "item_name": ["Eggs", "Milk"],
+        "unit_price": ["3.99", "4.49"],
+        "unit": ["dozen", "gallon"],
+        "include": ["0", "1"],
+    })
+    assert resp.status_code == 200
+    eggs = prices_core.get_by_name("Eggs")
+    assert eggs is not None
+    assert eggs.unit_price == 3.99
+
+
+def test_prices_import_save_skips_unchecked(authed_client):
+    resp = authed_client.post("/stores/prices/import/save", data={
+        "store_id": "",
+        "item_name": ["Butter", "Cheese"],
+        "unit_price": ["5.99", "7.99"],
+        "unit": ["", ""],
+        "include": ["0"],  # only first item checked
+    })
+    assert resp.status_code == 200
+    assert prices_core.get_by_name("Butter") is not None
+    assert prices_core.get_by_name("Cheese") is None
