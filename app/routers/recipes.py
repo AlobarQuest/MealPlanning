@@ -1,3 +1,4 @@
+import base64
 import re
 from pathlib import Path
 
@@ -114,7 +115,6 @@ async def recipes_add(request: Request, photo: Optional[UploadFile] = File(None)
     if photo and photo.filename:
         file_bytes = await photo.read()
     elif form.get("og_image_b64"):
-        import base64
         try:
             file_bytes = base64.b64decode(form["og_image_b64"])
         except Exception:
@@ -172,7 +172,6 @@ def ai_parse_url(request: Request, url: str = Form(...)):
     if recipe:
         img_bytes = fetch_og_image(url)
         if img_bytes:
-            import base64
             og_image_b64 = base64.b64encode(img_bytes).decode()
     return templates.TemplateResponse(request, "partials/recipe_dialog.html", {
         "recipe": recipe,
