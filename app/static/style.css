@@ -130,6 +130,26 @@ tr.expiring td { background: #fff7ed; }
 .shopping-item label { flex: 1; font-size: 13px; }
 .shopping-item .cost { font-size: 12px; color: #64748b; }
 
+/* -- Help / User Guide -- */
+.help-page { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+.help-page h1 { font-size: 1.75rem; font-weight: 700; margin-bottom: 1.25rem; }
+.help-page h2 { font-size: 1.25rem; font-weight: 700; margin-top: 2rem; margin-bottom: .5rem;
+                 border-bottom: 2px solid #e2e8f0; padding-bottom: .35rem; color: #1e40af; }
+.help-page h3 { font-size: 1rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: .25rem; }
+.help-page p { margin-bottom: .75rem; line-height: 1.65; }
+.help-page ul, .help-page ol { margin: .5rem 0 .75rem 1.5rem; line-height: 1.65; }
+.help-page li { margin-bottom: .25rem; }
+.help-page table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.25rem; font-size: 13px; }
+.help-page th { background: #f1f5f9; font-weight: 600; text-align: left;
+                 padding: 8px 10px; border: 1px solid #e2e8f0; }
+.help-page td { padding: 7px 10px; border: 1px solid #e2e8f0; vertical-align: top; }
+.help-page code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px;
+                   font-size: .85em; font-family: monospace; }
+.help-page strong { font-weight: 600; }
+.help-page hr { border: none; border-top: 1px solid #e2e8f0; margin: 1.5rem 0; }
+.help-page a { color: #2563eb; }
+.help-page a:hover { text-decoration: underline; }
+
 /* -- HTMX loading -- */
 .htmx-indicator { display: none; }
 .htmx-request .htmx-indicator { display: inline; }

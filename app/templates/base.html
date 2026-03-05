@@ -29,6 +29,7 @@
   {% if not demo %}
   <a href="/settings" class="{{ 'active' if active_tab == 'settings' }}">Settings</a>
   {% endif %}
+  <a href="/help" class="{{ 'active' if active_tab == 'help' }}">Help</a>
   <span class="spacer"></span>
   {% if not demo %}
   <form method="post" action="/logout" style="display:inline">

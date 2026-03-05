@@ -24,7 +24,7 @@ def verify_session_token(token: str) -> bool:
 
 
 # Paths that don't require auth
-_PUBLIC_PREFIXES = ("/login", "/static", "/demo")
+_PUBLIC_PREFIXES = ("/login", "/static", "/demo", "/help")
 
 
 def is_public(path: str) -> bool:
