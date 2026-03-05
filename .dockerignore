@@ -7,5 +7,6 @@ __pycache__
 tests/
 meal_planner/gui/
 *.md
+!USER_GUIDE.md
 docs/
 .worktrees/
