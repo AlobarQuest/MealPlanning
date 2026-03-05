@@ -45,6 +45,7 @@ def demo_pantry(request: Request):
         expiring_ids=expiring_ids,
         locations=locations, categories=categories,
         filter_location="", filter_category="", today="",
+        active_view="inventory",
     ))
 
 

@@ -43,6 +43,7 @@ def pantry_page(request: Request, location: str = "", category: str = "", migrat
         filter_category=category,
         today=_today(),
         expiring_ids=expiring_ids,
+        active_view="inventory",
         flash_message="Database imported successfully. Welcome to the web app!" if migrated else None,
         flash_type="success",
     ))
