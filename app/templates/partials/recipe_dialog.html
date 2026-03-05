@@ -77,6 +77,10 @@
         {% endif %}
         <input type="file" name="photo" accept="image/jpeg,image/png">
         <small style="color:#94a3b8">JPG or PNG. Leave blank to keep existing photo.</small>
+        {% if og_image_b64 is defined and og_image_b64 %}
+        <input type="hidden" name="og_image_b64" value="{{ og_image_b64 }}">
+        <small style="color:#16a34a">Photo found at source URL and will be saved automatically.</small>
+        {% endif %}
       </div>
 
       <div class="form-group">

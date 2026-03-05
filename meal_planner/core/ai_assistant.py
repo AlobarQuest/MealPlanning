@@ -217,6 +217,37 @@ Return only the JSON, wrapped in ```json``` code fences."""
     return recipe
 
 
+def fetch_og_image(url: str) -> Optional[bytes]:
+    """Attempt to download the og:image from a URL. Returns image bytes or None."""
+    try:
+        response = httpx.get(url, follow_redirects=True, timeout=15)
+        response.raise_for_status()
+        html = response.text
+    except Exception:
+        return None
+
+    # Try both attribute orderings
+    match = re.search(
+        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+        html, re.IGNORECASE
+    )
+    if not match:
+        match = re.search(
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
+            html, re.IGNORECASE
+        )
+    if not match:
+        return None
+
+    img_url = match.group(1)
+    try:
+        img_response = httpx.get(img_url, follow_redirects=True, timeout=15)
+        img_response.raise_for_status()
+        return img_response.content
+    except Exception:
+        return None
+
+
 def generate_recipe(preferences: str = "") -> Optional[Recipe]:
     """Generate a recipe using current pantry contents."""
     pantry_summary = _get_pantry_summary()

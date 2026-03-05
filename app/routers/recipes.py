@@ -10,6 +10,7 @@ import io
 from meal_planner.core import recipes as recipes_core
 from meal_planner.core.ai_assistant import (
     parse_recipe_text, parse_recipe_url, generate_recipe, modify_recipe,
+    fetch_og_image,
 )
 from meal_planner.db.models import Recipe, RecipeIngredient
 
@@ -109,8 +110,16 @@ async def recipes_add(request: Request, photo: Optional[UploadFile] = File(None)
     form = await request.form()
     recipe = _recipe_from_form(form)
     recipe_id = recipes_core.add(recipe)
+    file_bytes = None
     if photo and photo.filename:
         file_bytes = await photo.read()
+    elif form.get("og_image_b64"):
+        import base64
+        try:
+            file_bytes = base64.b64decode(form["og_image_b64"])
+        except Exception:
+            file_bytes = None
+    if file_bytes:
         photo_path = _save_photo(recipe_id, file_bytes)
         if photo_path:
             saved = recipes_core.get(recipe_id)
@@ -159,10 +168,17 @@ def ai_url_form(request: Request):
 @router.post("/ai/parse-url", response_class=HTMLResponse)
 def ai_parse_url(request: Request, url: str = Form(...)):
     recipe = parse_recipe_url(url)
+    og_image_b64 = None
+    if recipe:
+        img_bytes = fetch_og_image(url)
+        if img_bytes:
+            import base64
+            og_image_b64 = base64.b64encode(img_bytes).decode()
     return templates.TemplateResponse(request, "partials/recipe_dialog.html", {
         "recipe": recipe,
         "ingredients": recipe.ingredients if recipe else [],
         "is_ai_preview": True,
+        "og_image_b64": og_image_b64,
     })
 
 
