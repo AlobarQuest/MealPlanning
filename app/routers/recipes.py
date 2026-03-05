@@ -93,7 +93,7 @@ def recipes_page(request: Request):
 def recipes_list(request: Request, q: str = ""):
     recipe_list = recipes_core.search(q) if q else recipes_core.get_all()
     return templates.TemplateResponse(request, "partials/recipe_list.html", {
-        "recipes": recipe_list, "q": q,
+        "recipes": recipe_list, "q": q, "selected_id": None,
     })
 
 

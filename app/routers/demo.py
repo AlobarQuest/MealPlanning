@@ -96,6 +96,7 @@ def demo_meal_plan(request: Request, week: str = ""):
         prev_week=(week_start + timedelta(days=-7)).isoformat(),
         next_week=(week_start + timedelta(days=7)).isoformat(),
         today_week=get_week_start().isoformat(),
+        today=date_type.today().isoformat(),
     ))
 
 
@@ -125,6 +126,7 @@ def demo_meal_plan_grid(request: Request, week: str = ""):
         "prev_week": (week_start + timedelta(days=-7)).isoformat(),
         "next_week": (week_start + timedelta(days=7)).isoformat(),
         "today_week": get_week_start().isoformat(),
+        "today": date_type.today().isoformat(),
     })
 
 

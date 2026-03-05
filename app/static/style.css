@@ -255,6 +255,9 @@ tr.expiring td { background: #fff7ed; }
 
 /* ─── Meal grid ──────────────────────────────────────────────────────────── */
 .meal-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 4px; }
+.meal-grid-cell { }
+.meal-grid-slot { font-size: 12px; font-weight: 600; color: var(--color-text-muted);
+                  display: flex; align-items: center; }
 .meal-grid-header { font-weight: 600; text-align: center; padding: 8px 4px;
                      font-size: 12px; color: var(--color-text-muted); }
 .meal-grid-header.today { color: var(--color-accent); }

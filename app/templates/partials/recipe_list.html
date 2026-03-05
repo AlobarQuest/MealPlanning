@@ -1,7 +1,7 @@
 {% if recipes %}
 {% for recipe in recipes %}
 <div class="recipe-list-item {{ 'active' if selected_id and selected_id == recipe.id }}"
-     hx-get="/recipes/{{ recipe.id }}"
+     hx-get="{{ '/demo' if demo else '' }}/recipes/{{ recipe.id }}"
      hx-target="#recipe-detail"
      hx-push-url="false">
   <div class="recipe-list-thumb">
