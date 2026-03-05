@@ -5,6 +5,7 @@ services:
       - "8080:8080"
     volumes:
       - meal_data:/data
+      - uploads_data:/app/app/static/uploads/recipes
     environment:
       - APP_PASSWORD=${APP_PASSWORD:-changeme}
       - SECRET_KEY=${SECRET_KEY:-change-this-in-production}
@@ -21,3 +22,4 @@ services:
 
 volumes:
   meal_data:
+  uploads_data:

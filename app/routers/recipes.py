@@ -1,9 +1,12 @@
 import re
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException, Request, Form
+from fastapi import APIRouter, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+from typing import Optional
+import io as _io
+from pathlib import Path as _Path
 
 from meal_planner.core import recipes as recipes_core
 from meal_planner.core.ai_assistant import (
@@ -58,6 +61,23 @@ def _recipe_from_form(form, recipe_id=None) -> Recipe:
     )
 
 
+_UPLOADS_DIR = _Path(__file__).parent.parent / "static" / "uploads" / "recipes"
+
+
+def _save_photo(recipe_id: int, file_bytes: bytes) -> Optional[str]:
+    """Save uploaded image bytes as JPEG. Returns the static URL path or None on failure."""
+    try:
+        from PIL import Image
+        img = Image.open(_io.BytesIO(file_bytes))
+        img = img.convert("RGB")
+        _UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+        dest = _UPLOADS_DIR / f"{recipe_id}.jpg"
+        img.save(dest, "JPEG", quality=85)
+        return f"/static/uploads/recipes/{recipe_id}.jpg"
+    except Exception:
+        return None
+
+
 # ── List & search ──────────────────────────────────────────────────────────────
 
 @router.get("", response_class=HTMLResponse)
@@ -86,10 +106,17 @@ def recipes_add_form(request: Request):
 
 
 @router.post("/add")
-async def recipes_add(request: Request):
+async def recipes_add(request: Request, photo: Optional[UploadFile] = File(None)):
     form = await request.form()
     recipe = _recipe_from_form(form)
     recipe_id = recipes_core.add(recipe)
+    if photo and photo.filename:
+        file_bytes = await photo.read()
+        photo_path = _save_photo(recipe_id, file_bytes)
+        if photo_path:
+            saved = recipes_core.get(recipe_id)
+            saved.photo_path = photo_path
+            recipes_core.update(saved)
     return RedirectResponse(url=f"/recipes/{recipe_id}", status_code=303)
 
 
@@ -182,9 +209,17 @@ def recipe_edit_form(request: Request, recipe_id: int):
 
 
 @router.post("/{recipe_id}/edit", response_class=HTMLResponse)
-async def recipe_edit(request: Request, recipe_id: int):
+async def recipe_edit(request: Request, recipe_id: int, photo: Optional[UploadFile] = File(None)):
     form = await request.form()
     recipe = _recipe_from_form(form, recipe_id=recipe_id)
+    # Preserve existing photo_path if no new upload
+    existing = recipes_core.get(recipe_id)
+    recipe.photo_path = existing.photo_path if existing else None
+    if photo and photo.filename:
+        file_bytes = await photo.read()
+        new_path = _save_photo(recipe_id, file_bytes)
+        if new_path:
+            recipe.photo_path = new_path
     recipes_core.update(recipe)
     updated = recipes_core.get(recipe_id)
     return templates.TemplateResponse(request, "partials/recipe_detail.html", {

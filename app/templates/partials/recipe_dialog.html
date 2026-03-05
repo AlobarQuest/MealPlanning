@@ -1,7 +1,9 @@
 <dialog style="max-width:680px;width:95%;max-height:90vh;overflow-y:auto">
   {% set action = ('/recipes/' ~ recipe.id ~ '/edit') if recipe and recipe.id else '/recipes/add' %}
   <form method="post" action="{{ action }}"
+        enctype="multipart/form-data"
         hx-post="{{ action }}"
+        hx-encoding="multipart/form-data"
         hx-target="{{ '#recipe-detail' if recipe and recipe.id else 'body' }}"
         hx-push-url="{{ '/recipes/' ~ recipe.id if recipe and recipe.id else 'false' }}"
         hx-on::after-request="if(event.detail.successful && event.detail.xhr.status < 400){ this.closest('dialog').close(); this.closest('dialog').remove(); }">
@@ -62,6 +64,19 @@
       <div class="form-group">
         <label>Source URL</label>
         <input type="url" name="source_url" value="{{ recipe.source_url or '' }}">
+      </div>
+
+      <div class="form-group">
+        <label>Photo</label>
+        {% if recipe and recipe.photo_path %}
+        <div style="margin-bottom:.5rem">
+          <img src="{{ recipe.photo_path }}" alt="Current photo"
+               style="width:80px;height:80px;object-fit:cover;border-radius:6px">
+          <span style="font-size:.85rem;color:#64748b;margin-left:.5rem">Current photo</span>
+        </div>
+        {% endif %}
+        <input type="file" name="photo" accept="image/jpeg,image/png">
+        <small style="color:#94a3b8">JPG or PNG. Leave blank to keep existing photo.</small>
       </div>
 
       <div class="form-group">
