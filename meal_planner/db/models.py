@@ -110,6 +110,9 @@ class Staple:
     preferred_store_id: Optional[int] = None
     need_to_buy: bool = False
 
+    def __post_init__(self):
+        self.need_to_buy = bool(self.need_to_buy)
+
 
 @dataclass
 class KnownPrice:

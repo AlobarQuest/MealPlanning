@@ -1,5 +1,6 @@
 """Staples router — CRUD for pantry staples, nested under /pantry/staples."""
 from pathlib import Path
+from typing import List
 
 from fastapi import APIRouter, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse
@@ -33,6 +34,19 @@ def staples_add_form(request: Request):
 @router.post("/add", response_class=HTMLResponse)
 def staples_add(request: Request, name: str = Form(...)):
     staples_core.add(Staple(id=None, name=name.strip()))
+    return templates.TemplateResponse(request, "partials/staples_list.html", {
+        "staples": _all_staples(), "demo": False,
+    })
+
+
+@router.post("/bulk-status", response_class=HTMLResponse)
+def staples_bulk_status(
+    request: Request,
+    staple_ids: List[int] = Form(default=[]),
+    need: int = Form(...),
+):
+    for sid in staple_ids:
+        staples_core.set_need_to_buy(sid, bool(need))
     return templates.TemplateResponse(request, "partials/staples_list.html", {
         "staples": _all_staples(), "demo": False,
     })

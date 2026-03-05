@@ -43,3 +43,24 @@ def test_staples_delete_removes_staple(authed_client):
     assert resp.status_code == 200
     assert resp.text.strip() == ""
     assert staples_core.get(staple.id) is None
+
+
+def test_staples_bulk_status_mark_needed(authed_client):
+    id1 = staples_core.add(Staple(id=None, name="Flour"))
+    id2 = staples_core.add(Staple(id=None, name="Sugar"))
+    resp = authed_client.post("/pantry/staples/bulk-status", data={
+        "staple_ids": [str(id1), str(id2)], "need": "1"
+    })
+    assert resp.status_code == 200
+    assert staples_core.get(id1).need_to_buy is True
+    assert staples_core.get(id2).need_to_buy is True
+    assert "Needed" in resp.text
+
+
+def test_staples_bulk_status_mark_onhand(authed_client):
+    staple_id = staples_core.add(Staple(id=None, name="Vinegar", need_to_buy=True))
+    resp = authed_client.post("/pantry/staples/bulk-status", data={
+        "staple_ids": [str(staple_id)], "need": "0"
+    })
+    assert resp.status_code == 200
+    assert staples_core.get(staple_id).need_to_buy is False
