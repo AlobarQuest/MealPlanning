@@ -9,6 +9,7 @@ from typing import Optional
 import io
 
 from meal_planner.core import recipes as recipes_core
+from meal_planner.core.starter_recipes import seed_starter_recipes
 from meal_planner.core.ai_assistant import (
     parse_recipe_text, parse_recipe_url, generate_recipe, modify_recipe,
     fetch_og_image,
@@ -94,6 +95,15 @@ def recipes_list(request: Request, q: str = ""):
     recipe_list = recipes_core.search(q) if q else recipes_core.get_all()
     return templates.TemplateResponse(request, "partials/recipe_list.html", {
         "recipes": recipe_list, "q": q, "selected_id": None,
+    })
+
+
+@router.post("/seed", response_class=HTMLResponse)
+def recipes_seed(request: Request):
+    seed_starter_recipes()
+    recipe_list = recipes_core.get_all()
+    return templates.TemplateResponse(request, "partials/recipe_list.html", {
+        "recipes": recipe_list, "q": "", "selected_id": None,
     })
 
 

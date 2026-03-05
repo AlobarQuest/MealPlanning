@@ -185,3 +185,47 @@ def test_recipe_photo_path(tmp_path):
         recipe_id = recipes_core.add(r)
         fetched = recipes_core.get(recipe_id)
         assert fetched.photo_path == "/static/uploads/recipes/1.jpg"
+
+
+def test_recipe_seed_inserts_starter_recipes(authed_client):
+    # Ensure recipes table is empty first
+    from meal_planner.core import recipes as recipes_core
+    for r in recipes_core.get_all():
+        recipes_core.delete(r.id)
+    assert recipes_core.get_all() == []
+
+    resp = authed_client.post("/recipes/seed")
+    assert resp.status_code == 200
+    # Should return the recipe list with recipes now in it
+    assert "Classic Oatmeal" in resp.text or "Spaghetti" in resp.text
+
+
+def test_recipe_seed_is_idempotent(authed_client):
+    # Seed twice — should not error or duplicate
+    authed_client.post("/recipes/seed")
+    resp = authed_client.post("/recipes/seed")
+    assert resp.status_code == 200
+    from meal_planner.core import recipes as recipes_core
+    all_recipes = recipes_core.get_all()
+    names = [r.name for r in all_recipes]
+    # "Classic Oatmeal with Berries" should appear exactly once
+    assert names.count("Classic Oatmeal with Berries") == 1
+
+
+def test_recipe_list_empty_state_shows_seed_button(authed_client):
+    from meal_planner.core import recipes as recipes_core
+    for r in recipes_core.get_all():
+        recipes_core.delete(r.id)
+    resp = authed_client.get("/recipes/list")
+    assert resp.status_code == 200
+    assert "Load starter recipes" in resp.text
+
+
+def test_recipe_list_search_empty_hides_seed_button(authed_client):
+    from meal_planner.core import recipes as recipes_core
+    for r in recipes_core.get_all():
+        recipes_core.delete(r.id)
+    resp = authed_client.get("/recipes/list?q=nonexistentquery")
+    assert resp.status_code == 200
+    assert "Load starter recipes" not in resp.text
+    assert "No recipes found" in resp.text

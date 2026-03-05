@@ -23,8 +23,17 @@
   </div>
 </div>
 {% endfor %}
-{% else %}
+{% elif q %}
 <div style="padding:2rem;text-align:center;color:var(--color-text-muted);font-size:13px">
   No recipes found.
+</div>
+{% else %}
+<div style="padding:2rem;text-align:center;color:var(--color-text-muted);font-size:13px">
+  <p style="margin-bottom:1rem">Your recipe library is empty.</p>
+  {% if not demo %}
+  <button class="btn btn-primary"
+          hx-post="/recipes/seed"
+          hx-target="#recipe-list">Load starter recipes</button>
+  {% endif %}
 </div>
 {% endif %}
