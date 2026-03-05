@@ -1,7 +1,7 @@
 """Staples router — CRUD for pantry staples, nested under /pantry/staples."""
 from pathlib import Path
 
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -40,14 +40,19 @@ def staples_add(request: Request, name: str = Form(...)):
 
 @router.get("/{staple_id}/edit", response_class=HTMLResponse)
 def staples_edit_form(request: Request, staple_id: int):
+    staple = staples_core.get(staple_id)
+    if staple is None:
+        raise HTTPException(status_code=404, detail="Staple not found")
     return templates.TemplateResponse(request, "partials/staple_dialog.html", {
-        "staple": staples_core.get(staple_id),
+        "staple": staple,
     })
 
 
 @router.post("/{staple_id}/edit", response_class=HTMLResponse)
 def staples_edit(request: Request, staple_id: int, name: str = Form(...)):
     staple = staples_core.get(staple_id)
+    if staple is None:
+        raise HTTPException(status_code=404, detail="Staple not found")
     staple.name = name.strip()
     staples_core.update(staple)
     return templates.TemplateResponse(request, "partials/staples_list.html", {

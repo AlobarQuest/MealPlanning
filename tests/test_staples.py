@@ -30,7 +30,7 @@ def test_staples_edit_form_returns_dialog(authed_client):
 
 def test_staples_edit_saves_changes(authed_client):
     staples_core.add(Staple(id=None, name="Pepper"))
-    staple = staples_core.get_all()[-1]
+    staple = next(s for s in staples_core.get_all() if s.name == "Pepper")
     resp = authed_client.post(f"/pantry/staples/{staple.id}/edit", data={"name": "Black Pepper"})
     assert resp.status_code == 200
     assert "Black Pepper" in resp.text
