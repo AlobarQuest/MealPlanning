@@ -48,6 +48,24 @@ def pantry_page(request: Request, location: str = "", category: str = "", migrat
     ))
 
 
+@router.get("/inventory", response_class=HTMLResponse)
+def pantry_inventory(request: Request, location: str = "", category: str = ""):
+    items = pantry_core.get_all(location=location or None, category=category or None)
+    stores = pantry_core.get_all_stores()
+    expiring_ids = {i.id for i in pantry_core.get_expiring_soon(7)}
+    return templates.TemplateResponse(request, "partials/pantry_inventory.html", {
+        "items": items,
+        "store_map": _store_map(stores),
+        "locations": [""] + pantry_core.get_locations(),
+        "categories": [""] + pantry_core.get_categories(),
+        "filter_location": location,
+        "filter_category": category,
+        "today": _today(),
+        "expiring_ids": expiring_ids,
+        "demo": False,
+    })
+
+
 @router.get("/rows", response_class=HTMLResponse)
 def pantry_rows(request: Request, location: str = "", category: str = ""):
     items = pantry_core.get_all(location=location or None, category=category or None)

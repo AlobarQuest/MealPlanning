@@ -338,3 +338,14 @@ tr.expiring td { background: #fff7ed; }
 @media (min-width: 769px) {
   .bottom-tab-bar { display: none; }
 }
+
+/* ─── View toggle ────────────────────────────────────────────────────────── */
+.view-toggle { display: flex; gap: 4px; margin-bottom: 1rem; }
+.view-toggle-btn { background: var(--color-surface); border: 1px solid var(--color-border);
+                   border-radius: var(--radius-md); padding: 6px 16px; font-size: 13px;
+                   font-weight: 500; cursor: pointer; color: var(--color-text-muted); }
+.view-toggle-btn.active { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+
+/* ─── Staple status tags ─────────────────────────────────────────────────── */
+.tag-needed { background: #fef3c7; color: #92400e; }
+.tag-onhand { background: #d1fae5; color: #065f46; }
