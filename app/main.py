@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from meal_planner.db.database import init_db
 from app.dependencies import verify_session_token, is_public, SESSION_COOKIE
-from app.routers import auth, pantry, recipes, meal_plan, shopping, stores, settings, demo, help
+from app.routers import auth, pantry, recipes, meal_plan, shopping, stores, settings, demo, help, admin
 
 
 @asynccontextmanager
@@ -52,3 +52,4 @@ app.include_router(stores.router)
 app.include_router(settings.router)
 app.include_router(demo.router)
 app.include_router(help.router)
+app.include_router(admin.router)

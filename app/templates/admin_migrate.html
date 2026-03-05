@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Database Migration — Meal Planner{% endblock %}
+{% block content %}
+
+<div style="max-width:520px">
+  <h2>Import Desktop Database</h2>
+
+  {% if done %}
+
+  <p style="color:#16a34a;margin-top:1rem">
+    Migration already completed. Your data has been imported.
+  </p>
+  <p style="margin-top:.5rem">
+    <a href="/pantry">Go to Pantry</a>
+  </p>
+
+  {% else %}
+
+  <p style="margin-top:1rem;line-height:1.6">
+    Upload your desktop app database file to replace all data on this server
+    with your local data. This action cannot be undone.
+  </p>
+
+  <p style="color:#64748b;font-size:.9rem;margin-top:.5rem;line-height:1.6">
+    Find your database file at:<br>
+    <strong>Windows:</strong> <code>%USERPROFILE%\.meal_planner\meal_planner.db</code><br>
+    <strong>Mac / Linux:</strong> <code>~/.meal_planner/meal_planner.db</code>
+  </p>
+
+  {% if error %}
+  <p style="color:#dc2626;margin-top:1rem">{{ error }}</p>
+  {% endif %}
+
+  <form method="post" action="/admin/migrate" enctype="multipart/form-data"
+        style="margin-top:1.25rem">
+    <div class="form-group">
+      <label>Database file (.db)</label>
+      <input type="file" name="db_file" accept=".db" required style="margin-top:.35rem">
+    </div>
+    <button type="submit" class="btn btn-primary"
+            onclick="return confirm('This will replace all data on the server. Are you sure?')">
+      Import and Replace Data
+    </button>
+  </form>
+
+  {% endif %}
+</div>
+
+{% endblock %}

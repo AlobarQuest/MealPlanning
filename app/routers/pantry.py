@@ -28,7 +28,7 @@ def _today() -> str:
 
 
 @router.get("", response_class=HTMLResponse)
-def pantry_page(request: Request, location: str = "", category: str = ""):
+def pantry_page(request: Request, location: str = "", category: str = "", migrated: str = ""):
     items = pantry_core.get_all(location=location or None, category=category or None)
     stores = pantry_core.get_all_stores()
     expiring_ids = {i.id for i in pantry_core.get_expiring_soon(7)}
@@ -43,6 +43,8 @@ def pantry_page(request: Request, location: str = "", category: str = ""):
         filter_category=category,
         today=_today(),
         expiring_ids=expiring_ids,
+        flash_message="Database imported successfully. Welcome to the web app!" if migrated else None,
+        flash_type="success",
     ))
 
 
