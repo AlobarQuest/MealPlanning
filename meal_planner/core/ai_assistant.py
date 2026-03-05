@@ -17,7 +17,16 @@ from meal_planner.db.models import Recipe, RecipeIngredient
 
 
 def _get_api_key() -> Optional[str]:
-    """Retrieve the Claude API key from the settings table, or None if not set."""
+    """Retrieve the Claude API key.
+
+    Priority order:
+    1. CLAUDE_API_KEY environment variable
+    2. settings table in the database
+    """
+    import os
+    env_key = os.environ.get("CLAUDE_API_KEY", "").strip()
+    if env_key:
+        return env_key
     conn = get_connection()
     try:
         row = conn.execute("SELECT value FROM settings WHERE key = 'claude_api_key'").fetchone()
@@ -26,12 +35,31 @@ def _get_api_key() -> Optional[str]:
         conn.close()
 
 
+def get_api_key_status() -> dict:
+    """Return a dict describing where the API key comes from and whether it is set.
+
+    Returns:
+        {"set": bool, "source": "env" | "database" | None}
+    """
+    import os
+    if os.environ.get("CLAUDE_API_KEY", "").strip():
+        return {"set": True, "source": "env"}
+    conn = get_connection()
+    try:
+        row = conn.execute("SELECT value FROM settings WHERE key = 'claude_api_key'").fetchone()
+        if row and row["value"]:
+            return {"set": True, "source": "database"}
+    finally:
+        conn.close()
+    return {"set": False, "source": None}
+
+
 def _get_client():
     """Create and return an Anthropic client. Raises ValueError if the API key is not set."""
     import anthropic
     api_key = _get_api_key()
     if not api_key:
-        raise ValueError("Claude API key not set. Go to File → Settings to add your API key.")
+        raise ValueError("Claude API key not set. Configure the CLAUDE_API_KEY environment variable.")
     return anthropic.Anthropic(api_key=api_key)
 
 
