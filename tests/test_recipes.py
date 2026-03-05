@@ -196,6 +196,8 @@ def test_recipe_seed_inserts_starter_recipes(authed_client):
 
     resp = authed_client.post("/recipes/seed")
     assert resp.status_code == 200
+    from meal_planner.core import recipes as recipes_core
+    assert len(recipes_core.get_all()) == 20
     # Should return the recipe list with recipes now in it
     assert "Classic Oatmeal" in resp.text or "Spaghetti" in resp.text
 
