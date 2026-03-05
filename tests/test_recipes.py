@@ -145,3 +145,14 @@ def test_recipe_ai_modify_form(authed_client):
     resp = authed_client.get(f"/recipes/{recipe_id}/ai/modify")
     assert resp.status_code == 200
     assert "instruction" in resp.text.lower() or "modify" in resp.text.lower()
+
+
+def test_recipe_photo_path(set_test_env):
+    from meal_planner.core import recipes as recipes_core
+    from meal_planner.db.database import init_db
+    from meal_planner.db.models import Recipe
+    init_db()
+    r = Recipe(id=None, name="Photo Test", photo_path="/static/uploads/recipes/1.jpg")
+    recipe_id = recipes_core.add(r)
+    fetched = recipes_core.get(recipe_id)
+    assert fetched.photo_path == "/static/uploads/recipes/1.jpg"

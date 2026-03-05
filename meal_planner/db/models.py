@@ -75,6 +75,7 @@ class Recipe:
     source_url: Optional[str] = None
     tags: Optional[str] = None
     rating: Optional[int] = None
+    photo_path: Optional[str] = None
     created_at: Optional[str] = None
     ingredients: list = field(default_factory=list)  # list[RecipeIngredient]
 

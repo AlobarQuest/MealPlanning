@@ -173,6 +173,7 @@ def init_db(db_path: Path = None) -> None:
         ("shopping_name", "recipe_ingredients", "TEXT"),
         ("shopping_qty", "recipe_ingredients", "REAL"),
         ("shopping_unit", "recipe_ingredients", "TEXT"),
+        ("photo_path", "recipes", "TEXT"),
     ]:
         try:
             conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {col_type}")

@@ -23,6 +23,7 @@ def _row_to_recipe(row, conn) -> Recipe:
         source_url=row["source_url"],
         tags=row["tags"],
         rating=row["rating"],
+        photo_path=row["photo_path"],
         created_at=row["created_at"],
     )
     ing_rows = conn.execute(
@@ -86,12 +87,12 @@ def add(recipe: Recipe) -> int:
     try:
         cursor = conn.execute(
             """INSERT INTO recipes (name, description, servings, prep_time, cook_time,
-               instructions, source_url, tags, rating)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+               instructions, source_url, tags, rating, photo_path)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 recipe.name, recipe.description, recipe.servings,
                 recipe.prep_time, recipe.cook_time, recipe.instructions,
-                recipe.source_url, recipe.tags, recipe.rating,
+                recipe.source_url, recipe.tags, recipe.rating, recipe.photo_path,
             ),
         )
         recipe_id = cursor.lastrowid
@@ -116,12 +117,12 @@ def update(recipe: Recipe) -> None:
     try:
         conn.execute(
             """UPDATE recipes SET name=?, description=?, servings=?, prep_time=?,
-               cook_time=?, instructions=?, source_url=?, tags=?, rating=?
+               cook_time=?, instructions=?, source_url=?, tags=?, rating=?, photo_path=?
                WHERE id=?""",
             (
                 recipe.name, recipe.description, recipe.servings,
                 recipe.prep_time, recipe.cook_time, recipe.instructions,
-                recipe.source_url, recipe.tags, recipe.rating, recipe.id,
+                recipe.source_url, recipe.tags, recipe.rating, recipe.photo_path, recipe.id,
             ),
         )
         conn.execute("DELETE FROM recipe_ingredients WHERE recipe_id = ?", (recipe.id,))
