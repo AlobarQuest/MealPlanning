@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from meal_planner.db.database import init_db
 from app.dependencies import verify_session_token, is_public, SESSION_COOKIE
-from app.routers import auth, pantry, recipes, meal_plan, shopping, stores, settings, demo, help, admin
+from app.routers import auth, pantry, recipes, meal_plan, shopping, stores, settings, demo, help, admin, staples
 
 
 @asynccontextmanager
@@ -47,6 +47,7 @@ async def auth_middleware(request: Request, call_next):
 
 
 app.include_router(auth.router)
+app.include_router(staples.router)
 app.include_router(pantry.router)
 app.include_router(recipes.router)
 app.include_router(meal_plan.router)

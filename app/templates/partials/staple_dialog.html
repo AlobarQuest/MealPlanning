@@ -1,0 +1,18 @@
+<dialog>
+  <form method="post"
+        action="{{ '/pantry/staples/' + staple.id|string + '/edit' if staple else '/pantry/staples/add' }}"
+        hx-post="{{ '/pantry/staples/' + staple.id|string + '/edit' if staple else '/pantry/staples/add' }}"
+        hx-target="#pantry-view"
+        hx-on::after-request="this.closest('dialog').remove()">
+    <h3>{{ 'Edit Staple' if staple else 'Add Staple' }}</h3>
+    <label>Name
+      <input type="text" name="name" value="{{ staple.name if staple else '' }}"
+             required autofocus>
+    </label>
+    <div class="dialog-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').remove()">Cancel</button>
+    </div>
+  </form>
+</dialog>

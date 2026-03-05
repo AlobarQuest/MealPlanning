@@ -1,0 +1,71 @@
+<div class="toolbar" id="staples-toolbar">
+  {% if not demo %}
+  <button class="btn btn-primary"
+          hx-get="/pantry/staples/add"
+          hx-target="#modal-container">+ Add Staple</button>
+  <button id="btn-mark-needed" class="btn btn-secondary" disabled
+          hx-post="/pantry/staples/bulk-status"
+          hx-include="[name='staple_ids']:checked"
+          hx-vals='{"need": "1"}'
+          hx-target="#pantry-view">Mark as Needed</button>
+  <button id="btn-mark-onhand" class="btn btn-secondary" disabled
+          hx-post="/pantry/staples/bulk-status"
+          hx-include="[name='staple_ids']:checked"
+          hx-vals='{"need": "0"}'
+          hx-target="#pantry-view">Mark as On Hand</button>
+  {% endif %}
+</div>
+
+<table>
+  <thead>
+    <tr>
+      {% if not demo %}<th style="width:2rem"></th>{% endif %}
+      <th>Name</th>
+      <th>Status</th>
+      {% if not demo %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for staple in staples %}
+    <tr id="staple-row-{{ staple.id }}">
+      {% if not demo %}
+      <td><input type="checkbox" name="staple_ids" value="{{ staple.id }}"
+                 onchange="updateBulkButtons()"></td>
+      {% endif %}
+      <td>{{ staple.name }}</td>
+      <td>
+        <span class="tag {{ 'tag-needed' if staple.need_to_buy else 'tag-onhand' }}">
+          {{ 'Needed' if staple.need_to_buy else 'On Hand' }}
+        </span>
+      </td>
+      {% if not demo %}
+      <td style="white-space:nowrap">
+        <button class="btn btn-secondary btn-sm"
+                hx-get="/pantry/staples/{{ staple.id }}/edit"
+                hx-target="#modal-container">Edit</button>
+        <button class="btn btn-danger btn-sm"
+                hx-delete="/pantry/staples/{{ staple.id }}"
+                hx-target="#staple-row-{{ staple.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Delete {{ staple.name }}?">Del</button>
+      </td>
+      {% endif %}
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="{{ 4 if not demo else 2 }}"
+          style="text-align:center;color:#94a3b8;padding:2rem">
+        No staples yet. Add items you always keep on hand.
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+function updateBulkButtons() {
+  const any = document.querySelectorAll('[name="staple_ids"]:checked').length > 0;
+  document.getElementById('btn-mark-needed').disabled = !any;
+  document.getElementById('btn-mark-onhand').disabled = !any;
+}
+</script>
