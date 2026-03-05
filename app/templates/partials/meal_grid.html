@@ -18,7 +18,7 @@
     <!-- Header row: day names -->
     <div class="meal-grid-cell meal-grid-header"></div>
     {% for d in week_dates %}
-    <div class="meal-grid-cell meal-grid-header">
+    <div class="meal-grid-cell meal-grid-header {{ 'today' if d.isoformat() == today }}">
       <div>{{ day_names[loop.index0][:3] }}</div>
       <div style="font-weight:400;font-size:.8rem;color:#64748b">
         {{ d.strftime('%b %d') }}

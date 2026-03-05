@@ -36,6 +36,7 @@ def _week_context(week_start: date) -> dict:
         "prev_week": (week_start - timedelta(days=7)).isoformat(),
         "next_week": (week_start + timedelta(days=7)).isoformat(),
         "today_week": mp_core.get_week_start().isoformat(),
+        "today": date.today().isoformat(),
     }
 
 

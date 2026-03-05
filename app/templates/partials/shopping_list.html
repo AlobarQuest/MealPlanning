@@ -3,9 +3,7 @@
 <div id="shopping-list-data">
   {% for store, items in shopping.items() %}
   <div class="shopping-store" style="margin-bottom:1.25rem">
-    <h3 style="margin-bottom:.5rem;padding-bottom:.25rem;border-bottom:2px solid #e2e8f0">
-      {{ store }}
-    </h3>
+    <div class="shopping-store-header">{{ store }}</div>
     {% for name, qty, unit, cost in items %}
     <div class="shopping-item" style="display:flex;align-items:center;gap:.6rem;padding:.3rem 0">
       <input type="checkbox" id="item-{{ store|replace(' ','-') }}-{{ loop.index }}">
