@@ -43,3 +43,6 @@ inventory.csv
 *.PNG
 *.png
 IMG_*
+
+app/static/uploads/recipes/*.jpg
+app/static/uploads/recipes/*.png

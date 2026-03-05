@@ -18,6 +18,9 @@ from app.routers import auth, pantry, recipes, meal_plan, shopping, stores, sett
 async def lifespan(app: FastAPI):
     # Initialize main DB
     init_db()
+    # Ensure photo upload directory exists
+    uploads_dir = Path(__file__).parent / "static" / "uploads" / "recipes"
+    uploads_dir.mkdir(parents=True, exist_ok=True)
     # Initialize and seed demo DB if DEMO_DB_URL is set
     demo_url = os.environ.get("DEMO_DB_URL")
     if demo_url:
