@@ -16,9 +16,10 @@ def _price_list_ctx(store_id: int = 0):
     all_prices = prices_core.get_all()
     if store_id:
         all_prices = [p for p in all_prices if p.store_id == store_id]
-    store_map = {s.id: s.name for s in stores_core.get_all()}
+    all_stores = stores_core.get_all()
+    store_map = {s.id: s.name for s in all_stores}
     return {"prices": all_prices, "store_map": store_map,
-            "stores": stores_core.get_all(), "filter_store_id": store_id}
+            "stores": all_stores, "filter_store_id": store_id}
 
 
 @router.get("", response_class=HTMLResponse)
