@@ -147,12 +147,15 @@ def test_recipe_ai_modify_form(authed_client):
     assert "instruction" in resp.text.lower() or "modify" in resp.text.lower()
 
 
-def test_recipe_photo_path(set_test_env):
+def test_recipe_photo_path(tmp_path):
+    from meal_planner.db.database import init_db, override_db_path
     from meal_planner.core import recipes as recipes_core
-    from meal_planner.db.database import init_db
     from meal_planner.db.models import Recipe
-    init_db()
-    r = Recipe(id=None, name="Photo Test", photo_path="/static/uploads/recipes/1.jpg")
-    recipe_id = recipes_core.add(r)
-    fetched = recipes_core.get(recipe_id)
-    assert fetched.photo_path == "/static/uploads/recipes/1.jpg"
+
+    db_path = tmp_path / "test.db"
+    with override_db_path(db_path):
+        init_db()
+        r = Recipe(id=None, name="Photo Test", photo_path="/static/uploads/recipes/1.jpg")
+        recipe_id = recipes_core.add(r)
+        fetched = recipes_core.get(recipe_id)
+        assert fetched.photo_path == "/static/uploads/recipes/1.jpg"
