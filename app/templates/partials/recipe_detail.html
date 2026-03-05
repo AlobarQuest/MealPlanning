@@ -1,8 +1,10 @@
 <div class="recipe-detail">
+
+  <!-- Header -->
   <div class="recipe-detail-header">
-    <h2>{{ recipe.name }}</h2>
+    <h1 class="recipe-detail-title">{{ recipe.name }}</h1>
     {% if not demo %}
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <div class="recipe-detail-actions">
       <button class="btn btn-secondary btn-sm"
               hx-get="/recipes/{{ recipe.id }}/edit"
               hx-target="#modal-container">Edit</button>
@@ -18,18 +20,14 @@
     {% endif %}
   </div>
 
+  <!-- Meta strip -->
   <div class="recipe-meta">
-    {% if recipe.servings %}
-    <span><strong>Servings:</strong> {{ recipe.servings }}</span>
-    {% endif %}
-    {% if recipe.prep_time %}
-    <span><strong>Prep:</strong> {{ recipe.prep_time }}</span>
-    {% endif %}
-    {% if recipe.cook_time %}
-    <span><strong>Cook:</strong> {{ recipe.cook_time }}</span>
-    {% endif %}
-    {% if recipe.rating %}
-    <span><strong>Rating:</strong> {{ recipe.rating }}/5</span>
+    {% if recipe.servings %}<span><strong>Servings:</strong> {{ recipe.servings }}</span>{% endif %}
+    {% if recipe.prep_time %}<span><strong>Prep:</strong> {{ recipe.prep_time }}</span>{% endif %}
+    {% if recipe.cook_time %}<span><strong>Cook:</strong> {{ recipe.cook_time }}</span>{% endif %}
+    {% if recipe.rating %}<span><strong>Rating:</strong> {{ recipe.rating }}/5</span>{% endif %}
+    {% if recipe.source_url %}
+    <span><a href="{{ recipe.source_url }}" target="_blank" rel="noopener">Source ↗</a></span>
     {% endif %}
   </div>
 
@@ -41,31 +39,68 @@
   </div>
   {% endif %}
 
-  {% if recipe.source_url %}
-  <div style="margin:.5rem 0">
-    <a href="{{ recipe.source_url }}" target="_blank" rel="noopener">Source ↗</a>
-  </div>
-  {% endif %}
-
   {% if recipe.description %}
-  <p style="margin:.75rem 0;color:#475569">{{ recipe.description }}</p>
+  <p style="font-size:14px;color:var(--color-text-muted);margin-bottom:.75rem">{{ recipe.description }}</p>
   {% endif %}
 
-  {% if recipe.ingredients %}
-  <h3>Ingredients</h3>
-  <ul class="ingredient-list">
-    {% for ing in recipe.ingredients %}
-    <li>
-      {% if ing.quantity %}{{ ing.quantity|round(2) }}{% endif %}
-      {% if ing.unit %}{{ ing.unit }}{% endif %}
-      {{ ing.name }}
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+  <!-- Three-zone body: ingredients | photo, then instructions full-width -->
+  <div class="recipe-body">
 
-  {% if recipe.instructions %}
-  <h3>Instructions</h3>
-  <div class="recipe-instructions">{{ recipe.instructions }}</div>
-  {% endif %}
+    <!-- Top-left: ingredients -->
+    <div class="recipe-ingredients">
+      <h3>Ingredients</h3>
+      {% if recipe.ingredients %}
+      <ul class="ingredient-list">
+        {% for ing in recipe.ingredients %}
+        <li>
+          {% if ing.quantity %}{{ ing.quantity|round(2) }}{% endif %}
+          {% if ing.unit %}{{ ing.unit }}{% endif %}
+          {{ ing.name }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="color:var(--color-text-muted);font-size:13px">No ingredients listed.</p>
+      {% endif %}
+    </div>
+
+    <!-- Top-right: photo -->
+    <div>
+      {% if recipe.photo_path %}
+      <img src="{{ recipe.photo_path }}" alt="{{ recipe.name }}" class="recipe-photo">
+      {% else %}
+      <div class="recipe-photo-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        <span style="font-size:12px">No photo</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Full-width: instructions -->
+    {% if recipe.instructions %}
+    <div class="recipe-instructions">
+      <h3>Instructions</h3>
+      <div class="recipe-instructions-text">{{ recipe.instructions }}</div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- Mobile back button -->
+  <div class="mobile-back-btn" style="margin-top:1.5rem;display:none">
+    <button class="btn btn-secondary btn-sm"
+            onclick="document.getElementById('recipes-page').classList.remove('detail-open')">
+      ← Back to recipes
+    </button>
+  </div>
+
 </div>
+
+<style>
+@media (max-width: 768px) {
+  .mobile-back-btn { display: block !important; }
+}
+</style>

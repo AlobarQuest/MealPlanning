@@ -4,18 +4,27 @@
      hx-get="/recipes/{{ recipe.id }}"
      hx-target="#recipe-detail"
      hx-push-url="false">
-  <div class="recipe-list-name">{{ recipe.name }}</div>
-  {% if recipe.tags %}
-  <div class="recipe-list-tags">
-    {% for tag in recipe.tags.split(',') %}
-    <span class="tag">{{ tag.strip() }}</span>
-    {% endfor %}
+  <div class="recipe-list-thumb">
+    {% if recipe.photo_path %}
+    <img src="{{ recipe.photo_path }}" alt="{{ recipe.name }}">
+    {% else %}
+    📄
+    {% endif %}
   </div>
-  {% endif %}
+  <div class="recipe-list-info">
+    <div class="recipe-list-name">{{ recipe.name }}</div>
+    {% if recipe.tags %}
+    <div class="recipe-list-tags">
+      {% for tag in recipe.tags.split(',')[:3] %}
+      <span class="tag">{{ tag.strip() }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
 </div>
 {% endfor %}
 {% else %}
-<div style="padding:2rem;text-align:center;color:#94a3b8">
+<div style="padding:2rem;text-align:center;color:var(--color-text-muted);font-size:13px">
   No recipes found.
 </div>
 {% endif %}

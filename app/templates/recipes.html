@@ -2,50 +2,52 @@
 {% block title %}Recipes — Meal Planner{% endblock %}
 {% block content %}
 
-<div class="split-pane">
+<div class="recipes-page" id="recipes-page">
 
-  <!-- ── Left: recipe list ──────────────────────────────────────── -->
-  <div class="split-left">
-    <div class="toolbar">
+  <!-- ── Left: recipe list ── -->
+  <div class="recipe-list-panel">
+    <div class="recipe-list-search">
       <input type="search" name="q" placeholder="Search recipes…"
              hx-get="/recipes/list"
              hx-target="#recipe-list"
              hx-trigger="input changed delay:300ms, search"
-             hx-include="this"
-             style="flex:1">
-
-      {% if not demo %}
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-        <button class="btn btn-primary"
-                hx-get="/recipes/add"
-                hx-target="#modal-container">+ Add</button>
-        <button class="btn btn-secondary"
-                hx-get="/recipes/ai/paste"
-                hx-target="#modal-container">Paste Text</button>
-        <button class="btn btn-secondary"
-                hx-get="/recipes/ai/url"
-                hx-target="#modal-container">From URL</button>
-        <button class="btn btn-secondary"
-                hx-get="/recipes/ai/generate"
-                hx-target="#modal-container">AI Generate</button>
-      </div>
-      {% endif %}
-
-      <span class="htmx-indicator"><span class="spinner"></span></span>
+             hx-include="this">
     </div>
 
-    <div id="recipe-list">
+    {% if not demo %}
+    <div class="recipe-list-actions">
+      <div class="add-recipe-dropdown">
+        <button class="btn btn-primary btn-sm" data-dropdown-toggle>+ Add ▾</button>
+        <div class="add-recipe-menu">
+          <button hx-get="/recipes/add" hx-target="#modal-container">Add Manually</button>
+          <button hx-get="/recipes/ai/paste" hx-target="#modal-container">Paste Text</button>
+          <button hx-get="/recipes/ai/url" hx-target="#modal-container">From URL</button>
+          <button hx-get="/recipes/ai/generate" hx-target="#modal-container">AI Generate</button>
+        </div>
+      </div>
+      <span class="htmx-indicator"><span class="spinner"></span></span>
+    </div>
+    {% endif %}
+
+    <div id="recipe-list" class="recipe-list-scroll">
       {% include "partials/recipe_list.html" %}
     </div>
   </div>
 
-  <!-- ── Right: recipe detail ───────────────────────────────────── -->
-  <div class="split-right" id="recipe-detail">
-    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8">
-      Select a recipe to view details.
-    </div>
+  <!-- ── Right: recipe detail ── -->
+  <div class="recipe-detail-panel" id="recipe-detail">
+    <div class="recipe-detail-empty">Select a recipe to view details.</div>
   </div>
 
 </div>
+
+<script>
+// Mobile: show detail pane when a recipe is selected
+document.addEventListener('htmx:afterSwap', function(e) {
+  if (e.target.id === 'recipe-detail') {
+    document.getElementById('recipes-page').classList.add('detail-open');
+  }
+});
+</script>
 
 {% endblock %}
