@@ -64,3 +64,20 @@ def test_staples_bulk_status_mark_onhand(authed_client):
     })
     assert resp.status_code == 200
     assert staples_core.get(staple_id).need_to_buy is False
+
+
+def test_demo_staples_accessible_without_auth():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app, raise_server_exceptions=True) as c:
+        resp = c.get("/demo/pantry/staples", follow_redirects=False)
+    assert resp.status_code == 200
+
+
+def test_demo_staples_hides_write_buttons():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app, raise_server_exceptions=True) as c:
+        resp = c.get("/demo/pantry/staples")
+    assert "Add Staple" not in resp.text
+    assert "Mark as Needed" not in resp.text

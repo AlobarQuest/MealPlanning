@@ -13,6 +13,7 @@ from fastapi.templating import Jinja2Templates
 
 from meal_planner.db.database import override_db_path
 from meal_planner.core import pantry as pantry_core, recipes as recipes_core
+from meal_planner.core import staples as staples_core
 from meal_planner.core import meal_plan as mp_core, stores as stores_core
 from meal_planner.core.shopping_list import generate as shopping_generate, format_shopping_list
 
@@ -47,6 +48,17 @@ def demo_pantry(request: Request):
         filter_location="", filter_category="", today="",
         active_view="inventory",
     ))
+
+
+# ── Staples ────────────────────────────────────────────────────────────────────
+
+@router.get("/pantry/staples", response_class=HTMLResponse)
+def demo_staples(request: Request):
+    with override_db_path(_demo_db_path()):
+        staple_list = staples_core.get_all()
+    return templates.TemplateResponse(request, "partials/staples_list.html", {
+        "staples": staple_list, "demo": True,
+    })
 
 
 # ── Recipes ────────────────────────────────────────────────────────────────────
