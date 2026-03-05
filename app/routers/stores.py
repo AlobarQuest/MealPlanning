@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from meal_planner.core import stores as stores_core
+from meal_planner.core import known_prices as prices_core
 from meal_planner.db.models import Store
 
 router = APIRouter(prefix="/stores", tags=["stores"])
@@ -13,9 +14,13 @@ templates = Jinja2Templates(directory=Path(__file__).parent.parent / "templates"
 
 @router.get("", response_class=HTMLResponse)
 def stores_page(request: Request):
+    all_stores = stores_core.get_all()
     return templates.TemplateResponse(request, "stores.html", {
         "active_tab": "stores", "demo": False,
-        "stores": stores_core.get_all(),
+        "stores": all_stores,
+        "prices": prices_core.get_all(),
+        "store_map": {s.id: s.name for s in all_stores},
+        "filter_store_id": 0,
     })
 
 

@@ -1,0 +1,61 @@
+<div class="toolbar">
+  {% if not demo %}
+  <select hx-get="/stores/prices"
+          hx-target="#price-list-body"
+          hx-swap="innerHTML"
+          name="store_id">
+    <option value="">All Stores</option>
+    {% for store in stores %}
+    <option value="{{ store.id }}" {{ 'selected' if filter_store_id == store.id }}>
+      {{ store.name }}
+    </option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary"
+          hx-get="/stores/prices/add"
+          hx-target="#modal-container">+ Add Price</button>
+  <button class="btn btn-secondary"
+          hx-get="/stores/prices/import"
+          hx-target="#modal-container">Import from Receipt</button>
+  {% endif %}
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Price</th>
+      <th>Unit</th>
+      <th>Store</th>
+      <th>Updated</th>
+      {% if not demo %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody id="price-list-body">
+    {% for price in prices %}
+    <tr id="price-row-{{ price.id }}">
+      <td>{{ price.item_name }}</td>
+      <td>${{ "%.2f"|format(price.unit_price) }}</td>
+      <td>{{ price.unit or '—' }}</td>
+      <td>{{ store_map.get(price.store_id, '—') }}</td>
+      <td style="font-size:12px;color:#94a3b8">{{ price.last_updated[:10] if price.last_updated else '—' }}</td>
+      {% if not demo %}
+      <td>
+        <button class="btn btn-danger btn-sm"
+                hx-delete="/stores/prices/{{ price.id }}"
+                hx-target="#price-row-{{ price.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Delete price for {{ price.item_name }}?">Del</button>
+      </td>
+      {% endif %}
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="{{ 6 if not demo else 5 }}"
+          style="text-align:center;color:#94a3b8;padding:2rem">
+        No prices yet. Add manually or import from a receipt.
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

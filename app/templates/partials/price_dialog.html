@@ -1,0 +1,30 @@
+<dialog>
+  <form hx-post="/stores/prices/add"
+        hx-target="#price-list-body"
+        hx-swap="innerHTML"
+        hx-on::after-request="this.closest('dialog').remove()">
+    <h3>Add Price</h3>
+    <label>Item Name
+      <input type="text" name="item_name" required autofocus>
+    </label>
+    <label>Price ($)
+      <input type="number" name="unit_price" step="0.01" min="0" required>
+    </label>
+    <label>Unit (optional)
+      <input type="text" name="unit" placeholder="e.g. bottle, lb, each">
+    </label>
+    <label>Store (optional)
+      <select name="store_id">
+        <option value="">— Any store —</option>
+        {% for store in stores %}
+        <option value="{{ store.id }}">{{ store.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <div class="dialog-actions">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="button" class="btn btn-secondary"
+              onclick="this.closest('dialog').remove()">Cancel</button>
+    </div>
+  </form>
+</dialog>
